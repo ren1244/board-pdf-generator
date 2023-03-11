@@ -12,11 +12,6 @@ const scale = edge * 72 / 25.4;
 const strokW = 2 / scale;
 const x0 = (pageW - edge * 8) * 36 / 25.4;
 const y0 = (pageH - edge * 9) * 36 / 25.4;
-const y1 = (pageH + edge * 9) * 36 / 25.4;
-const ty0 = pageH * 36 / 25.4;
-const tx0 = pageW * 36 / 25.4;
-const dtx = edge * 72 / 25.4;
-const fontSize = edge * 0.8 * 72 / 25.4;
 
 const pdf = new Pdf;
 pdf.addPage(pageW, pageH);
@@ -71,22 +66,22 @@ const tmp = [
     '-0.08 -0.25 m -0.08 -0.08 l -0.25 -0.08 l', //(三)
 ];
 
-let s = [`q ${strokW.toFixed(5)} w`];
+let s = [`q`];
 for (let x = 1; x < 8; ++x) {
     s.push(`${x} 0 m ${x} 4 l`);
 }
 for (let y = 1; y < 5; ++y) {
     s.push(`0 ${y} m 8 ${y} l`);
 }
-s.push(`3 0 m 5 2 l 5 0 m 3 2 l`);
-s.push(`0 0 8 9 re S ${(strokW * 1.5).toFixed(5)} w -0.08 -0.08 8.16 9.16 re S Q`);
-s.push(`q 1 0 0 1 2 3 cm ${strokW.toFixed(5)} w ${tmp.join(' ')} S Q`);
-s.push(`q 1 0 0 1 4 3 cm ${strokW.toFixed(5)} w ${tmp.join(' ')} S Q`);
-s.push(`q 1 0 0 1 6 3 cm ${strokW.toFixed(5)} w ${tmp.join(' ')} S Q`);
-s.push(`q 1 0 0 1 1 2 cm ${strokW.toFixed(5)} w ${tmp.join(' ')} S Q`);
-s.push(`q 1 0 0 1 7 2 cm ${strokW.toFixed(5)} w ${tmp.join(' ')} S Q`);
-s.push(`q 1 0 0 1 0 3 cm ${strokW.toFixed(5)} w ${tmp.slice(0, 2).join(' ')} S Q`);
-s.push(`q 1 0 0 1 8 3 cm ${strokW.toFixed(5)} w ${tmp.slice(2).join(' ')} S Q`);
+s.push(`3 0 m 5 2 l 5 0 m 3 2 l S`);
+s.push(`q 1 0 0 1 2 3 cm ${tmp.join(' ')} S Q`);
+s.push(`q 1 0 0 1 4 3 cm ${tmp.join(' ')} S Q`);
+s.push(`q 1 0 0 1 6 3 cm ${tmp.join(' ')} S Q`);
+s.push(`q 1 0 0 1 1 2 cm ${tmp.join(' ')} S Q`);
+s.push(`q 1 0 0 1 7 2 cm ${tmp.join(' ')} S Q`);
+s.push(`q 1 0 0 1 0 3 cm ${tmp.slice(0, 2).join(' ')} S Q`);
+s.push(`q 1 0 0 1 8 3 cm ${tmp.slice(2).join(' ')} S Q`);
+s.push('Q');
 
 pdf.addResource('XObject', 'FX1', new PdfDict({
     Type: '/XObject',
@@ -99,27 +94,28 @@ pdf.addResource('Font', 'FT1', fontObj);
 
 function convFontInfo(font, ch, sz) {
     return {
-        tx: (1 - font.charInfo[ch].w / font.unitsPerEm) * sz / 2,
-        ty: (1 - (font.bbox[3] + font.bbox[1]) / font.unitsPerEm) * sz / 2,
+        tx: - font.charInfo[ch].w / font.unitsPerEm * sz / 2,
+        ty: - (font.bbox[3] + font.bbox[1]) / font.unitsPerEm * sz / 2,
         code: ('0000' + font.charInfo[ch].id).slice(-4),
     };
 }
 
 let chInf = [
-    convFontInfo(font, '楚', fontSize),
-    convFontInfo(font, '河', fontSize),
-    convFontInfo(font, '漢', fontSize),
-    convFontInfo(font, '界', fontSize),
+    convFontInfo(font, '楚', 0.8),
+    convFontInfo(font, '河', 0.8),
+    convFontInfo(font, '漢', 0.8),
+    convFontInfo(font, '界', 0.8),
 ];
 
 pdf.write([
-    '0 0 0 1 K 0 0 0 1 k',
-    `q ${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${x0.toFixed(5)} ${y0.toFixed(5)} cm /FX1 Do Q`,
-    `q ${scale.toFixed(5)} 0 0 ${(-scale).toFixed(5)} ${x0.toFixed(5)} ${y1.toFixed(5)} cm /FX1 Do Q`,
-    `q 0 1 -1 0 ${tx0 - 2.5 * dtx} ${ty0} cm 1 0 0 1 ${-fontSize / 2} ${-fontSize / 2} cm BT /FT1 ${fontSize} Tf ${chInf[0].tx} ${chInf[0].ty} Td <${chInf[0].code}> Tj ET Q`,
-    `q 0 1 -1 0 ${tx0 - 1.5 * dtx} ${ty0} cm 1 0 0 1 ${-fontSize / 2} ${-fontSize / 2} cm BT /FT1 ${fontSize} Tf ${chInf[1].tx} ${chInf[1].ty} Td <${chInf[1].code}> Tj ET Q`,
-    `q 0 -1 1 0 ${tx0 + 2.5 * dtx} ${ty0} cm 1 0 0 1 ${-fontSize / 2} ${-fontSize / 2} cm BT /FT1 ${fontSize} Tf ${chInf[2].tx} ${chInf[2].ty} Td <${chInf[2].code}> Tj ET Q`,
-    `q 0 -1 1 0 ${tx0 + 1.5 * dtx} ${ty0} cm 1 0 0 1 ${-fontSize / 2} ${-fontSize / 2} cm BT /FT1 ${fontSize} Tf ${chInf[3].tx} ${chInf[3].ty} Td <${chInf[3].code}> Tj ET Q`,
+    `0 0 0 1 K 0 0 0 1 k`,
+    `q ${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${(x0).toFixed(5)} ${(y0).toFixed(5)} cm ${strokW.toFixed(5)} w`,
+    `/FX1 Do q 1 0 0 -1 0 9 cm /FX1 Do Q 0 0 8 9 re S`,
+    `q 0 1 -1 0 1.5 4.5 cm BT /FT1 0.8 Tf ${chInf[0].tx} ${chInf[0].ty} Td <${chInf[0].code}> Tj ET Q`,
+    `q 0 1 -1 0 2.5 4.5 cm BT /FT1 0.8 Tf ${chInf[1].tx} ${chInf[1].ty} Td <${chInf[1].code}> Tj ET Q`,
+    `q 0 -1 1 0 6.5 4.5 cm BT /FT1 0.8 Tf ${chInf[2].tx} ${chInf[2].ty} Td <${chInf[2].code}> Tj ET Q`,
+    `q 0 -1 1 0 5.5 4.5 cm BT /FT1 0.8 Tf ${chInf[3].tx} ${chInf[3].ty} Td <${chInf[3].code}> Tj ET Q`,
+    'Q'
 ].join(' '));
 
 //輸出結果
