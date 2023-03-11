@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF</title>
+</head>
+<body>
+    <style>
+        html, body {
+            height: 100%;
+        }
+        html, body, div, pre, iframe {
+            margin: 0px;
+            padding: 0px;
+            border: none;
+        }
+        .row{
+            display: flex;
+            height: 100%;
+        }
+        .col{
+            flex: 1 1 1px;
+            height: 100%;
+            overflow: auto;
+        }
+        iframe, pre {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        pre{
+            padding: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+    <div class="row">
+        <div class="col">
+            <pre></pre>
+        </div>
+        <div class="col">
+            <iframe></iframe>
+        </div>
+    </div>
+    <script src="main.js" type="module"></script>
+</body>
+</html>
