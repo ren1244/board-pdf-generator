@@ -41,12 +41,12 @@ Pdf.prototype.write = function (stream) {
     this._currentPage.entries.Contents.push(new PdfDict({}, stream));
 }
 
-Pdf.prototype.addXObject= function(objname, dict) {
+Pdf.prototype.addResource= function(classname, objname, dict) {
     const res = this._currentPage.entries.Resources;
-    if(!res['XObject']) {
-        res['XObject'] = {};
+    if(!res[classname]) {
+        res[classname] = {};
     }
-    res['XObject'][objname] = dict;
+    res[classname][objname] = dict;
 }
 
 Pdf.prototype.output = function (outputType) {

@@ -1,4 +1,4 @@
-import { PdfDict, PdfDictRef } from './pdf-core.js';
+import { PdfDict } from './pdf-core.js';
 import Pdf from './pdf.js';
 
 const pageW = 297;
@@ -39,18 +39,17 @@ s.push(`q 1 0 0 1 7 2 cm ${strokW.toFixed(5)} w ${tmp.join(' ')} S Q`);
 s.push(`q 1 0 0 1 0 3 cm ${strokW.toFixed(5)} w ${tmp.slice(0, 2).join(' ')} S Q`);
 s.push(`q 1 0 0 1 8 3 cm ${strokW.toFixed(5)} w ${tmp.slice(2).join(' ')} S Q`);
 
-
-let xobj = new PdfDict({
+pdf.addResource('XObject', 'FX1', new PdfDict({
     Type: '/XObject',
     Subtype: '/Form',
     BBox: [-1, -1, 9, 10],
     Resources: '<< /ProcSet [ /PDF ] >>'
-}, s.join(' '));
-pdf.addXObject('xobj1', xobj);
+}, s.join(' ')));
+
 pdf.write([
     '0 0 0 1 K 0 0 0 1 k',
-    `q ${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${x0.toFixed(5)} ${y0.toFixed(5)} cm /xobj1 Do Q`,
-    `q ${scale.toFixed(5)} 0 0 ${(-scale).toFixed(5)} ${x0.toFixed(5)} ${y1.toFixed(5)} cm /xobj1 Do Q`,
+    `q ${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${x0.toFixed(5)} ${y0.toFixed(5)} cm /FX1 Do Q`,
+    `q ${scale.toFixed(5)} 0 0 ${(-scale).toFixed(5)} ${x0.toFixed(5)} ${y1.toFixed(5)} cm /FX1 Do Q`,
 ].join(' '));
 
 //輸出結果
