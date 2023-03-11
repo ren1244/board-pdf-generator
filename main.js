@@ -94,8 +94,8 @@ pdf.addResource('Font', 'FT1', fontObj);
 
 function convFontInfo(font, ch, sz) {
     return {
-        tx: - font.charInfo[ch].w / font.unitsPerEm * sz / 2,
-        ty: - (font.bbox[3] + font.bbox[1]) / font.unitsPerEm * sz / 2,
+        tx: (-font.charInfo[ch].w / font.unitsPerEm * sz / 2).toFixed(5),
+        ty: (-(font.bbox[3] + font.bbox[1]) / font.unitsPerEm * sz / 2).toFixed(5),
         code: ('0000' + font.charInfo[ch].id).slice(-4),
     };
 }
@@ -115,7 +115,7 @@ pdf.write([
     `q 0 1 -1 0 2.5 4.5 cm BT /FT1 0.8 Tf ${chInf[1].tx} ${chInf[1].ty} Td <${chInf[1].code}> Tj ET Q`,
     `q 0 -1 1 0 6.5 4.5 cm BT /FT1 0.8 Tf ${chInf[2].tx} ${chInf[2].ty} Td <${chInf[2].code}> Tj ET Q`,
     `q 0 -1 1 0 5.5 4.5 cm BT /FT1 0.8 Tf ${chInf[3].tx} ${chInf[3].ty} Td <${chInf[3].code}> Tj ET Q`,
-    'Q'
+    `${(strokW * 1.5).toFixed(5)} w -0.08 -0.08 8.16 9.16 re S Q`
 ].join(' '));
 
 //輸出結果
