@@ -1,5 +1,7 @@
 import { PdfDict } from './pdf-core.js';
 import Pdf from './pdf.js';
+import font from './font.js';
+import { base64_decode } from './base64.js';
 
 const pageW = 297;
 const pageH = 420;
@@ -11,9 +13,56 @@ const strokW = 2 / scale;
 const x0 = (pageW - edge * 8) * 36 / 25.4;
 const y0 = (pageH - edge * 9) * 36 / 25.4;
 const y1 = (pageH + edge * 9) * 36 / 25.4;
+const ty0 = pageH * 36 / 25.4;
+const tx0 = pageW * 36 / 25.4;
+const dtx = edge * 72 / 25.4;
+const fontSize = edge * 0.8 * 72 / 25.4;
 
 const pdf = new Pdf;
 pdf.addPage(pageW, pageH);
+
+let fontObj = new PdfDict({
+    Type: '/Font',
+    Subtype: '/Type0',
+    BaseFont: '/AAAAAA+' + font.fontname,
+    Encoding: '/Identity-H',
+    DescendantFonts: [],
+});
+
+let cidFont = new PdfDict({
+    Type: '/Font',
+    Subtype: '/CIDFontType2',
+    BaseFont: '/AAAAAA+' + font.fontname,
+    CIDSystemInfo: {
+        Registry: '(Adobe)',
+        Ordering: '(Identity)',
+        Supplement: 0,
+    },
+    FontDescriptor: null,
+    W: null,
+    CIDToGIDMap: '/Identity'
+});
+fontObj.entries.DescendantFonts.push(cidFont);
+let wArr = [];
+for (let k in font.charInfo) {
+    let x = font.charInfo[k];
+    wArr.push(x.w / font.unitsPerEm * 1000);
+}
+cidFont.entries.W = [1, wArr];
+
+let descriptor = new PdfDict({
+    Type: '/FontDescriptor',
+    FontName: '/AAAAAA+' + font.fontname,
+    Flags: '4',
+    FontBBox: font.bbox.map(x => x * 1000 / font.unitsPerEm),
+    ItalicAngle: font.italicAngle * 1000 / font.unitsPerEm,
+    Ascent: font.ascent * 1000 / font.unitsPerEm,
+    Descent: font.descent * 1000 / font.unitsPerEm,
+    CapHeight: font.capHeight * 1000 / font.unitsPerEm,
+    StemV: 0,
+    FontFile2: new PdfDict({}, base64_decode(font.data))
+});
+cidFont.entries.FontDescriptor = descriptor;
 
 const tmp = [
     '0.08 0.25 m 0.08 0.08 l 0.25 0.08 l',       //(一)
@@ -46,10 +95,31 @@ pdf.addResource('XObject', 'FX1', new PdfDict({
     Resources: '<< /ProcSet [ /PDF ] >>'
 }, s.join(' ')));
 
+pdf.addResource('Font', 'FT1', fontObj);
+
+function convFontInfo(font, ch, sz) {
+    return {
+        tx: (1 - font.charInfo[ch].w / font.unitsPerEm) * sz / 2,
+        ty: (1 - (font.bbox[3] + font.bbox[1]) / font.unitsPerEm) * sz / 2,
+        code: ('0000' + font.charInfo[ch].id).slice(-4),
+    };
+}
+
+let chInf = [
+    convFontInfo(font, '楚', fontSize),
+    convFontInfo(font, '河', fontSize),
+    convFontInfo(font, '漢', fontSize),
+    convFontInfo(font, '界', fontSize),
+];
+
 pdf.write([
     '0 0 0 1 K 0 0 0 1 k',
     `q ${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${x0.toFixed(5)} ${y0.toFixed(5)} cm /FX1 Do Q`,
     `q ${scale.toFixed(5)} 0 0 ${(-scale).toFixed(5)} ${x0.toFixed(5)} ${y1.toFixed(5)} cm /FX1 Do Q`,
+    `q 0 1 -1 0 ${tx0 - 2.5 * dtx} ${ty0} cm 1 0 0 1 ${-fontSize / 2} ${-fontSize / 2} cm BT /FT1 ${fontSize} Tf ${chInf[0].tx} ${chInf[0].ty} Td <${chInf[0].code}> Tj ET Q`,
+    `q 0 1 -1 0 ${tx0 - 1.5 * dtx} ${ty0} cm 1 0 0 1 ${-fontSize / 2} ${-fontSize / 2} cm BT /FT1 ${fontSize} Tf ${chInf[1].tx} ${chInf[1].ty} Td <${chInf[1].code}> Tj ET Q`,
+    `q 0 -1 1 0 ${tx0 + 2.5 * dtx} ${ty0} cm 1 0 0 1 ${-fontSize / 2} ${-fontSize / 2} cm BT /FT1 ${fontSize} Tf ${chInf[2].tx} ${chInf[2].ty} Td <${chInf[2].code}> Tj ET Q`,
+    `q 0 -1 1 0 ${tx0 + 1.5 * dtx} ${ty0} cm 1 0 0 1 ${-fontSize / 2} ${-fontSize / 2} cm BT /FT1 ${fontSize} Tf ${chInf[3].tx} ${chInf[3].ty} Td <${chInf[3].code}> Tj ET Q`,
 ].join(' '));
 
 //輸出結果

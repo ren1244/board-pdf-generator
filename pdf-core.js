@@ -58,7 +58,7 @@ PdfDict.prototype._parsePdfContent = function (id, queue) {
             if(typeof this.stream === 'string') {
                 this.stream = new TextEncoder().encode(this.stream);
             }
-            this.stream = zlibSync(this.stream);
+            this.stream = zlibSync(this.stream, {level: 9});
         }
     }
     if (this.stream instanceof Uint8Array) {
