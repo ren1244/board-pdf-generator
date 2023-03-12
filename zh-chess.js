@@ -25,8 +25,8 @@ export default function zhChess(pdf, pageW, pageH, edge) {
     });
     
     pdf.write([
-        `0 0 0 1 K 0 0 0 1 k`,
-        `q ${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${(x0).toFixed(5)} ${(y0).toFixed(5)} cm ${strokW.toFixed(5)} w`,
+        `q 0 0 0 1 K 0 0 0 1 k`,
+        `${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${(x0).toFixed(5)} ${(y0).toFixed(5)} cm ${strokW.toFixed(5)} w`,
         `/FX1 Do q 1 0 0 -1 0 9 cm /FX1 Do Q 0 0 8 9 re S`,
         `q 0 1 -1 0 1.5 4.5 cm BT /FT1 0.8 Tf ${chInf[0].tx} ${chInf[0].ty} Td <${chInf[0].code}> Tj ET Q`,
         `q 0 1 -1 0 2.5 4.5 cm BT /FT1 0.8 Tf ${chInf[1].tx} ${chInf[1].ty} Td <${chInf[1].code}> Tj ET Q`,

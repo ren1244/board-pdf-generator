@@ -92,9 +92,10 @@ PdfDict.prototype._parsePdfContent = function (id, queue) {
  * 產生 pdf
  * 
  * @param {PdfDict} rootDict Catalog
+ * @param {?PdfDict} infoDict Info
  * @returns {Array} pdf 內容，一個混合 string 跟 Uint8Array 的陣列
  */
-PdfDict.finalize = function (rootDict) {
+PdfDict.finalize = function (rootDict, infoDict) {
     //取得 blocks 
     let blocks;
     if (Array.isArray(rootDict)) {
@@ -102,6 +103,9 @@ PdfDict.finalize = function (rootDict) {
         rootDict = blocks[0];
     } else {
         blocks = [rootDict];
+    }
+    if(infoDict) {
+        blocks.push(infoDict);
     }
     let idx = 0;
     while (idx < blocks.length) {
@@ -135,6 +139,9 @@ PdfDict.finalize = function (rootDict) {
     output.push('<<\n');
     output.push(`/Size ${posRec.length + 1}\n`);
     output.push(`/Root ${rootDict.id} 0 R\n`);
+    if(infoDict) {
+        output.push(`/Info ${infoDict.id} 0 R\n`);
+    }
     output.push('>>\n');
     output.push('startxref\n');
     output.push(`${pos}\n`);
