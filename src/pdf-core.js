@@ -1,4 +1,4 @@
-import {zlibSync} from './node_modules/fflate/esm/browser.js';
+import {zlibSync} from '../node_modules/fflate/esm/browser.js';
 
 /**
  * PDF Dictionary 物件
