@@ -1,6 +1,7 @@
 import { PdfDict } from './pdf-core.js';
 import font from './font.js';
 import { base64_decode } from './base64.js';
+import fmtstr from './fmt-string.js';
 
 export default function zhChess(pdf, pageW, pageH, edge) {
     // 放大倍率
@@ -18,21 +19,21 @@ export default function zhChess(pdf, pageW, pageH, edge) {
 
     let chInf = Array.from('楚河漢界', ch => {
         return {
-            tx: (-font.charInfo[ch].w / font.unitsPerEm * 0.4).toFixed(5),
-            ty: (-(font.bbox[3] + font.bbox[1]) / font.unitsPerEm * 0.4).toFixed(5),
+            tx: -font.charInfo[ch].w / font.unitsPerEm * 0.4,
+            ty: -(font.bbox[3] + font.bbox[1]) / font.unitsPerEm * 0.4,
             code: ('0000' + font.charInfo[ch].id).slice(-4),
         }
     });
 
     pdf.write([
-        `q 0 0 0 1 K 0 0 0 1 k`,
-        `${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${(x0).toFixed(5)} ${(y0).toFixed(5)} cm ${strokW.toFixed(5)} w`,
-        `/FX1 Do q 1 0 0 -1 0 9 cm /FX1 Do Q 0 0 8 9 re S`,
-        `q 0 1 -1 0 1.5 4.5 cm BT /FT1 0.8 Tf ${chInf[0].tx} ${chInf[0].ty} Td <${chInf[0].code}> Tj ET Q`,
-        `q 0 1 -1 0 2.5 4.5 cm BT /FT1 0.8 Tf ${chInf[1].tx} ${chInf[1].ty} Td <${chInf[1].code}> Tj ET Q`,
-        `q 0 -1 1 0 6.5 4.5 cm BT /FT1 0.8 Tf ${chInf[2].tx} ${chInf[2].ty} Td <${chInf[2].code}> Tj ET Q`,
-        `q 0 -1 1 0 5.5 4.5 cm BT /FT1 0.8 Tf ${chInf[3].tx} ${chInf[3].ty} Td <${chInf[3].code}> Tj ET Q`,
-        `${(strokW * 1.5).toFixed(5)} w -0.08 -0.08 8.16 9.16 re S Q`
+        'q 0 0 0 1 K 0 0 0 1 k',
+        fmtstr('{} 0 0 {} {} {} cm {} w', scale, scale, x0, y0, strokW),
+        '/FX1 Do q 1 0 0 -1 0 9 cm /FX1 Do Q 0 0 8 9 re S',
+        fmtstr('q 0 1 -1 0 1.5 4.5 cm BT /FT1 0.8 Tf {} {} Td <{}> Tj ET Q', chInf[0].tx, chInf[0].ty, chInf[0].code),
+        fmtstr('q 0 1 -1 0 2.5 4.5 cm BT /FT1 0.8 Tf {} {} Td <{}> Tj ET Q', chInf[1].tx, chInf[1].ty, chInf[1].code),
+        fmtstr('q 0 -1 1 0 6.5 4.5 cm BT /FT1 0.8 Tf {} {} Td <{}> Tj ET Q', chInf[2].tx, chInf[2].ty, chInf[2].code),
+        fmtstr('q 0 -1 1 0 5.5 4.5 cm BT /FT1 0.8 Tf {} {} Td <{}> Tj ET Q', chInf[3].tx, chInf[3].ty, chInf[3].code),
+        fmtstr('{} w -0.08 -0.08 8.16 9.16 re S Q', strokW * 1.5),
     ].join(' '));
 }
 
@@ -62,7 +63,7 @@ function createFontDict() {
     let wArr = [];
     for (let k in font.charInfo) {
         let x = font.charInfo[k];
-        wArr.push(x.w / font.unitsPerEm * 1000);
+        wArr.push(fmtstr('{}', x.w / font.unitsPerEm * 1000));
     }
     cidFont.entries.W = [1, wArr];
 
@@ -71,11 +72,11 @@ function createFontDict() {
         Type: '/FontDescriptor',
         FontName: '/AAAAAA+' + font.fontname,
         Flags: '4',
-        FontBBox: font.bbox.map(x => x * 1000 / font.unitsPerEm),
-        ItalicAngle: font.italicAngle * 1000 / font.unitsPerEm,
-        Ascent: font.ascent * 1000 / font.unitsPerEm,
-        Descent: font.descent * 1000 / font.unitsPerEm,
-        CapHeight: font.capHeight * 1000 / font.unitsPerEm,
+        FontBBox: font.bbox.map(x => fmtstr('{}', x * 1000 / font.unitsPerEm)),
+        ItalicAngle: fmtstr('{}', font.italicAngle * 1000 / font.unitsPerEm),
+        Ascent: fmtstr('{}', font.ascent * 1000 / font.unitsPerEm),
+        Descent: fmtstr('{}', font.descent * 1000 / font.unitsPerEm),
+        CapHeight: fmtstr('{}', font.capHeight * 1000 / font.unitsPerEm),
         StemV: 0,
         FontFile2: new PdfDict({
             Length: fontdata.byteLength,

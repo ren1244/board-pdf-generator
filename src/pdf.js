@@ -1,4 +1,5 @@
 import { PdfDict, PdfDictRef } from './pdf-core.js';
+import fmtstr from './fmt-string.js';
 
 export default function Pdf() {
     //Catalog
@@ -24,7 +25,7 @@ Pdf.prototype.addPage = function (width, height) {
         Parent: new PdfDictRef(this._pageTree),
         Resources: {},
         Contents: [],
-        MediaBox: [0, 0, width * 72 / 25.4, height * 72 / 25.4]
+        MediaBox: fmtstr('[ {} {} {} {} ]', 0, 0, width * 72 / 25.4, height * 72 / 25.4)
     });
     this._pageTree.entries.Kids.push(this._currentPage); //加到 catalog
     ++this._pageTree.entries.Count;

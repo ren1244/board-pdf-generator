@@ -1,4 +1,5 @@
 import { PdfDict } from './pdf-core.js';
+import fmtstr from './fmt-string.js';
 
 export default function goBoard(pdf, pageW, pageH, n, gridW, gridH, diameter) {
     // 
@@ -19,15 +20,15 @@ export default function goBoard(pdf, pageW, pageH, n, gridW, gridH, diameter) {
 
     pdf.addPage(pageW, pageH);
     pdf.addResource('XObject', 'STAR', createXObject(r));
-    let s = [`q 0 0 0 1 K 0 0 0 1 k ${scale} 0 0 ${scale} ${x0} ${y0} cm ${strokW} w`];
+    let s = [fmtstr('q 0 0 0 1 K 0 0 0 1 k {} 0 0 {} {} {} cm {} w', scale, scale, x0, y0, strokW)];
     for (let k = 1; k < nm1; ++k) {
-        s.push(`0 ${k * gridH} m ${nm1 * gridW} ${k * gridH} l`);
-        s.push(`${k * gridW} 0 m ${k * gridW} ${nm1 * gridH} l`);
+        s.push(fmtstr('0 {} m {} {} l', k * gridH, nm1 * gridW, k * gridH));
+        s.push(fmtstr('{} 0 m {} {} l', k * gridW, k * gridW, nm1 * gridH));
     }
-    s.push(`0 0 ${nm1 * gridW} ${nm1 * gridH} re S`);
+    s.push(fmtstr('0 0 {} {} re S', nm1 * gridW, nm1 * gridH));
     for (let k = 0; k < 9; ++k) {
         if (1 << k & mask) {
-            s.push(`q 1 0 0 1 ${starPos[k % 3] * gridW} ${starPos[k / 3 | 0] * gridH} cm /STAR Do Q`);
+            s.push(fmtstr('q 1 0 0 1 {} {} cm /STAR Do Q', starPos[k % 3] * gridW, starPos[k / 3 | 0] * gridH));
         }
     }
     s.push(`Q`);
@@ -35,19 +36,19 @@ export default function goBoard(pdf, pageW, pageH, n, gridW, gridH, diameter) {
 }
 
 function createXObject(r) {
-    let l = (r * 4 / 3 * Math.tan(Math.PI / 8)).toFixed(5);
+    let l = r * 4 / 3 * Math.tan(Math.PI / 8);
     let s = [
-        `${r} 0 m ${r} ${l} ${l} ${r} 0 ${r} c`,
-        `-${l} ${r} -${r} ${l} -${r} 0 c`,
-        `-${r} -${l} -${l} -${r} 0 -${r} c`,
-        `${l} -${r} ${r} -${l} ${r} 0 c`,
+        fmtstr('{} 0 m {} {} {} {} 0 {} c', r, r, l, l, r, r),
+        fmtstr('{} {} {} {} {} 0 c', -l, r, -r, l, -r),
+        fmtstr('{} {} {} {} 0 {} c', -r, -l, -l, -r, -r),
+        fmtstr('{} {} {} {} {} 0 c', l, -r, r, -l, r),
         `f`,
     ];
 
     return new PdfDict({
         Type: '/XObject',
         Subtype: '/Form',
-        BBox: [-r - 1, -r - 1, r + 2, r + 2],
+        BBox: fmtstr('[ {} {} {} {} ]', -r - 1, -r - 1, r + 2, r + 2),
         Resources: '<< /ProcSet [ /PDF ] >>'
     }, s.join(' '));
 }
