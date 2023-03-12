@@ -66,7 +66,9 @@ PdfDict.prototype._parsePdfContent = function (id, queue) {
         if (!Array.isArray(this.entries.Filter)) {
             this.entries.Filter = [];
         }
-        this.entries.Filter.push('/FlateDecode')
+        if (!this.nocompress) {
+            this.entries.Filter.push('/FlateDecode')
+        }
     } else if (typeof this.stream === 'string') {
         this.entries.Length = this.stream.length;
     }

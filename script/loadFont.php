@@ -6,7 +6,7 @@ use ren1244\sfnt\TypeReader;
 
 header('Content-Type: text/plain');
 
-$fontRaw = file_get_contents('../asset/font/MoeLI.ttf');
+$fontRaw = file_get_contents(__DIR__ . '/../../asset/font/MoeLI.ttf');
 $font = new Sfnt(new TypeReader($fontRaw));
 
 $head = $font->table('head');
@@ -63,8 +63,8 @@ $mtx = [
     'typoDescender' => $os2->sTypoDescender,
     'typoLineGap' => $os2->sTypoLineGap,
     'charInfo' => $charInfo,
-    'data' => base64_encode(($data)),
+    'data' => base64_encode(gzcompress($data, 9)),
 ];
 
 $json = json_encode($mtx, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-file_put_contents('font.js', 'export default '.$json.";\n");
+file_put_contents(__DIR__ . '/../src/font.js', 'export default ' . $json . ";\n");

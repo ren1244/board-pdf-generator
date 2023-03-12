@@ -23,7 +23,7 @@ export default function zhChess(pdf, pageW, pageH, edge) {
             code: ('0000' + font.charInfo[ch].id).slice(-4),
         }
     });
-    
+
     pdf.write([
         `q 0 0 0 1 K 0 0 0 1 k`,
         `${scale.toFixed(5)} 0 0 ${scale.toFixed(5)} ${(x0).toFixed(5)} ${(y0).toFixed(5)} cm ${strokW.toFixed(5)} w`,
@@ -44,7 +44,7 @@ function createFontDict() {
         Encoding: '/Identity-H',
         DescendantFonts: [],
     });
-    
+
     let cidFont = new PdfDict({
         Type: '/Font',
         Subtype: '/CIDFontType2',
@@ -65,7 +65,8 @@ function createFontDict() {
         wArr.push(x.w / font.unitsPerEm * 1000);
     }
     cidFont.entries.W = [1, wArr];
-    
+
+    let fontdata = base64_decode(font.data);
     let descriptor = new PdfDict({
         Type: '/FontDescriptor',
         FontName: '/AAAAAA+' + font.fontname,
@@ -76,7 +77,10 @@ function createFontDict() {
         Descent: font.descent * 1000 / font.unitsPerEm,
         CapHeight: font.capHeight * 1000 / font.unitsPerEm,
         StemV: 0,
-        FontFile2: new PdfDict({}, base64_decode(font.data))
+        FontFile2: new PdfDict({
+            Length: fontdata.byteLength,
+            Filter: ['/FlateDecode']
+        }, fontdata, true)
     });
     cidFont.entries.FontDescriptor = descriptor;
 
@@ -91,7 +95,7 @@ function createXObject() {
         '-0.08 0.25 m -0.08 0.08 l -0.25 0.08 l',    // 第二象限的直角
         '-0.08 -0.25 m -0.08 -0.08 l -0.25 -0.08 l', // 第三象限的直角
     ];
-    
+
     let s = [`q`];
 
     // 縱線
@@ -105,8 +109,8 @@ function createXObject() {
     }
 
     // 大本營交叉線
-    s.push(`3 0 m 5 2 l 5 0 m 3 2 l S`); 
-    
+    s.push(`3 0 m 5 2 l 5 0 m 3 2 l S`);
+
     // 炮與兵卒位置
     s.push(`q 1 0 0 1 2 3 cm ${tmp.join(' ')} S Q`);
     s.push(`q 1 0 0 1 4 3 cm ${tmp.join(' ')} S Q`);
