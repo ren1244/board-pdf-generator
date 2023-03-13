@@ -1,4 +1,4 @@
-import { PdfDict, PdfDictRef } from './pdf-core.js';
+import { PdfDict } from './pdf-core.js';
 import fmtstr from './fmt-string.js';
 
 export default function Pdf() {
@@ -22,7 +22,7 @@ export default function Pdf() {
 Pdf.prototype.addPage = function (width, height) {
     this._currentPage = new PdfDict({
         Type: '/Page',
-        Parent: new PdfDictRef(this._pageTree),
+        Parent: this._pageTree,
         Resources: {},
         Contents: [],
         MediaBox: fmtstr('[ {} {} {} {} ]', 0, 0, width * 72 / 25.4, height * 72 / 25.4)
@@ -42,9 +42,9 @@ Pdf.prototype.write = function (stream) {
     this._currentPage.entries.Contents.push(new PdfDict({}, stream));
 }
 
-Pdf.prototype.addResource= function(classname, objname, dict) {
+Pdf.prototype.addResource = function (classname, objname, dict) {
     const res = this._currentPage.entries.Resources;
-    if(!res[classname]) {
+    if (!res[classname]) {
         res[classname] = {};
     }
     res[classname][objname] = dict;

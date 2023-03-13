@@ -1,4 +1,4 @@
-import {zlibSync} from '../node_modules/fflate/esm/browser.js';
+import { zlibSync } from '../node_modules/fflate/esm/browser.js';
 
 /**
  * PDF Dictionary 物件
@@ -20,17 +20,18 @@ function PdfDict(entries, stream, nocompress) {
  * @param {Array} queue 待處理（含已處理）block 陣列
  * @returns 此 blobk 內容
  */
-PdfDict.prototype._parsePdfContent = function (id, queue) {
+PdfDict.prototype._parsePdfContent = function (queue) {
     function parseValue(val) {
         if (typeof val === 'string' || typeof val === 'number') {
             return val;
         }
         if (val instanceof PdfDict) {
+            if (val.id !== undefined) {
+                return `${val.id} 0 R`;
+            }
             queue.push(val);
+            val.id = queue.length;
             return `${queue.length} 0 R`;
-        }
-        if (val instanceof PdfDictRef) {
-            return `${val.dict.id} 0 R`;
         }
         if (Array.isArray(val)) {
             let n = val.length;
@@ -49,16 +50,12 @@ PdfDict.prototype._parsePdfContent = function (id, queue) {
         }
         throw '未知的類型';
     }
-    if (this.id !== undefined) {
-        throw '重複寫入';
-    }
-    this.id = id;
     if (typeof this.stream === 'string' || this.stream instanceof Uint8Array) {
         if (!this.nocompress) {
-            if(typeof this.stream === 'string') {
+            if (typeof this.stream === 'string') {
                 this.stream = new TextEncoder().encode(this.stream);
             }
-            this.stream = zlibSync(this.stream, {level: 9});
+            this.stream = zlibSync(this.stream, { level: 9 });
         }
     }
     if (this.stream instanceof Uint8Array) {
@@ -72,6 +69,7 @@ PdfDict.prototype._parsePdfContent = function (id, queue) {
     } else if (typeof this.stream === 'string') {
         this.entries.Length = this.stream.length;
     }
+    const id = this.id;
     const entries = this.entries;
     let result = [`${id} 0 obj\n`];
     result.push('<<\n');
@@ -106,12 +104,15 @@ PdfDict.finalize = function (rootDict, infoDict) {
     } else {
         blocks = [rootDict];
     }
-    if(infoDict) {
+    if (infoDict) {
         blocks.push(infoDict);
     }
+    blocks.forEach((dict, idx) => {
+        dict.id = idx + 1;
+    })
     let idx = 0;
     while (idx < blocks.length) {
-        blocks[idx] = blocks[idx]._parsePdfContent(idx + 1, blocks);
+        blocks[idx] = blocks[idx]._parsePdfContent(blocks);
         ++idx;
     }
     //輸出
@@ -141,7 +142,7 @@ PdfDict.finalize = function (rootDict, infoDict) {
     output.push('<<\n');
     output.push(`/Size ${posRec.length + 1}\n`);
     output.push(`/Root ${rootDict.id} 0 R\n`);
-    if(infoDict) {
+    if (infoDict) {
         output.push(`/Info ${infoDict.id} 0 R\n`);
     }
     output.push('>>\n');
@@ -151,14 +152,4 @@ PdfDict.finalize = function (rootDict, infoDict) {
     return output;
 }
 
-/**
- * 某 PdfDict 的參照
- * 這只能用在子物件的 entry 需要參照其 parent 時
- * 
- * @param {PdfDict} dict 
- */
-function PdfDictRef(dict) {
-    this.dict = dict;
-}
-
-export { PdfDict, PdfDictRef };
+export { PdfDict };

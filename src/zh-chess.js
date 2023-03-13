@@ -3,6 +3,9 @@ import font from './font.js';
 import { base64_decode } from './base64.js';
 import fmtstr from './fmt-string.js';
 
+let boardXObject = null;
+let fontXObject = null;
+
 export default function zhChess(pdf, pageW, pageH, edge) {
     // 放大倍率
     const scale = edge * 72 / 25.4;
@@ -14,8 +17,15 @@ export default function zhChess(pdf, pageW, pageH, edge) {
 
     //建立頁面
     pdf.addPage(pageW, pageH);
-    pdf.addResource('Font', 'FT1', createFontDict());   // 字型
-    pdf.addResource('XObject', 'FX1', createXObject()); // 一半的棋盤，不含邊框跟文字
+    if (!fontXObject) {
+        fontXObject = createFontDict();
+    }
+    if (!boardXObject) {
+        boardXObject = createXObject();
+    }
+
+    pdf.addResource('Font', 'FT1', fontXObject);   // 字型
+    pdf.addResource('XObject', 'FX1', boardXObject); // 一半的棋盤，不含邊框跟文字
 
     let chInf = Array.from('楚河漢界', ch => {
         return {
