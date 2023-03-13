@@ -51,7 +51,18 @@ Pdf.prototype.addResource = function (classname, objname, dict) {
 }
 
 Pdf.prototype.output = function (outputType) {
-    let result = PdfDict.finalize(this._catalog);
+    let d = new Date();
+    d = '(D:' + d.getUTCFullYear() +
+        ('0' + (d.getUTCMonth() + 1)).slice(-2) +
+        ('0' + d.getUTCDate()).slice(-2) +
+        ('0' + d.getUTCHours()).slice(-2) +
+        ('0' + d.getUTCMinutes()).slice(-2) +
+        ('0' + d.getUTCSeconds()).slice(-2) + "+00'00')";
+    let result = PdfDict.finalize(this._catalog, new PdfDict({
+        Producer: '(https://github.com/ren1244/chess)',
+        CreationDate: d,
+        ModDate: d
+    }));
     switch (outputType) {
         case 'blob':
             return new Blob(result, { type: 'application/pdf' });
