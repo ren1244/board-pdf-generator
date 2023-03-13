@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>棋盤 PDF 列印 - A3</title>
+    <style>
+        html, body, .page{
+            height: 100%;
+        }
+        html, body, div, iframe {
+            margin: 0px;
+            padding: 0px;
+        }
+        body, button {
+            font-family: "微軟正黑體", "蘋方黑體", "華康麗黑體", "思源黑體", Helvetica , Arial , sans-serif , serif;
+        }
+        a {
+            font-size: large;
+            font-weight: bold;
+        }
+        .page{
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .option-box {
+            display: inline-block
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: none;
+        }
+        .hide-page {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="option-box">
+            <h3>棋盤種類</h3>
+            <p><input type="checkbox" id="zh-chess" checked> 象棋</p>
+            <p><input type="checkbox" id="chess" checked> 西洋棋</p>
+            <p><input type="checkbox" id="go" checked> 13 路圍棋</p>
+            <h3>其他選項</h3>
+            <p><input type="radio" name="other" data-clip="0" checked> 原始尺寸</p>
+            <p><input type="radio" name="other" data-clip="4"> 用於超商列印（四邊裁切 4 mm）</p>
+            <hr>
+            <a href="javascript:void()" id="start">產生 PDF</a>
+        </div>
+    </div>
+    <div class="page hide-page">
+        <iframe></iframe>
+    </div>
+    <script src="src/index.js" type="module"></script>
+</body>
+</html>

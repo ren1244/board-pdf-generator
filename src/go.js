@@ -1,8 +1,6 @@
 import { PdfDict } from './pdf-core.js';
 import fmtstr from './fmt-string.js';
 
-let circleFormXObject = null;
-
 export default function goBoard(pdf, pageW, pageH, n, gridW, gridH, diameter) {
     // 
     const nm1 = n - 1;
@@ -21,6 +19,7 @@ export default function goBoard(pdf, pageW, pageH, n, gridW, gridH, diameter) {
     gridH *= 10;
 
     pdf.addPage(pageW, pageH);
+    let circleFormXObject = pdf.getResource('XObject', 'STAR');
     if (!circleFormXObject) {
         circleFormXObject = createXObject();
     }

@@ -3,9 +3,6 @@ import font from './font.js';
 import { base64_decode } from './base64.js';
 import fmtstr from './fmt-string.js';
 
-let boardXObject = null;
-let fontXObject = null;
-
 export default function zhChess(pdf, pageW, pageH, edge) {
     // 放大倍率
     const scale = edge * 72 / 25.4;
@@ -17,6 +14,8 @@ export default function zhChess(pdf, pageW, pageH, edge) {
 
     //建立頁面
     pdf.addPage(pageW, pageH);
+    let fontXObject = pdf.getResource('Font', 'FT1');
+    let boardXObject = pdf.getResource('XObject', 'FX1');
     if (!fontXObject) {
         fontXObject = createFontDict();
     }

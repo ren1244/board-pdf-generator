@@ -17,6 +17,7 @@ export default function Pdf() {
     this._catalog.entries.Pages = this._pageTree; //加到 catalog
 
     this._currentPage = null;
+    this._resources = {};
 }
 
 Pdf.prototype.addPage = function (width, height) {
@@ -40,6 +41,13 @@ Pdf.prototype.getPageSize = function () {
 
 Pdf.prototype.write = function (stream) {
     this._currentPage.entries.Contents.push(new PdfDict({}, stream));
+}
+
+Pdf.prototype.getResource = function (classname, objname) {
+    if(this._resources[classname] && this._resources[classname][objname]) {
+        return this._resources[classname][objname];
+    }
+    return null;
 }
 
 Pdf.prototype.addResource = function (classname, objname, dict) {
