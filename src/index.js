@@ -31,9 +31,16 @@ document.querySelector('#start').addEventListener('click', () => {
         if (document.querySelector('#' + o.id).checked) {
             o.produce(pdf);
         }
-    })
-    document.querySelector('iframe').src = pdf.output('url');
+    });
+    document.querySelector('iframe').contentWindow.location.replace(pdf.output('url'));
     document.querySelectorAll('.page').forEach(ele => {
         ele.classList.toggle('hide-page');
-    })
+    });
+    window.history.pushState(null, null);
+});
+
+window.addEventListener('popstate', () => {
+    document.querySelectorAll('.page').forEach(ele => {
+        ele.classList.toggle('hide-page');
+    });
 });

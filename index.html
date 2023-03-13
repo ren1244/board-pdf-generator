@@ -37,6 +37,10 @@
         .hide-page {
             display: none;
         }
+        .note{
+            font-size: smaller;
+            color: gray;
+        }
     </style>
 </head>
 <body>
@@ -45,14 +49,14 @@
             <p>產生各種可列印棋盤（PDF, A3 尺寸）</p>
             <hr>
             <h3>棋盤種類</h3>
-            <p><input type="checkbox" id="zh-chess" checked> 象棋</p>
-            <p><input type="checkbox" id="chess" checked> 西洋棋</p>
-            <p><input type="checkbox" id="go" checked> 13 路圍棋</p>
+            <p><input type="checkbox" id="zh-chess" checked> 象棋 <span class="note">（格子：33 x 33 mm）</span></p>
+            <p><input type="checkbox" id="chess" checked> 西洋棋 <span class="note">（格子：35 x 35 mm）</span></p>
+            <p><input type="checkbox" id="go" checked> 13 路圍棋 <span class="note">（格子：23 x 24 mm）</span></p>
             <h3>其他選項</h3>
             <p><input type="radio" name="other" data-clip="0" checked> 原始尺寸</p>
             <p><input type="radio" name="other" data-clip="4"> 用於超商列印（四邊裁切 4 mm）</p>
             <hr>
-            <a href="javascript:void()" id="start">產生 PDF</a>
+            <a href="javascript:void(0)" id="start">產生 PDF</a>
         </div>
     </div>
     <div class="page hide-page">
