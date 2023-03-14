@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>棋盤 PDF 列印 - A3</title>
     <style>
-        html, body, .page{
+        html, body{
             height: 100%;
         }
         html, body, div, iframe {
@@ -16,14 +16,28 @@
         body, button {
             font-family: "微軟正黑體", "蘋方黑體", "華康麗黑體", "思源黑體", Helvetica , Arial , sans-serif , serif;
         }
-        a {
+        #start {
             font-size: large;
             font-weight: bold;
+        }
+        body{
+            display: flex;
+            flex-direction: column;
         }
         .page{
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            flex-grow: 1;
+        }
+        footer{
+            text-align: center;
+            color: white;
+            background-color: grey;
+            padding: 0.5em;
+        }
+        footer .a,  footer a:link, footer a:visited {
+            color: yellow;
         }
         .option-box {
             display: inline-block
@@ -62,6 +76,8 @@
     <div class="page hide-page">
         <iframe></iframe>
     </div>
-    <script src="src/index.js" type="module"></script>
+    <footer>象棋文字使用「<a href="https://language.moe.gov.tw/001/Upload/Files/site_content/M0001/eduli.pdf">中華民國教育部-隸書字形檔</a>」</footer>
+    <!-- <script src="src/index.js" type="module"></script> -->
+    <script src="dist/index.bundle.js"></script>
 </body>
 </html>
