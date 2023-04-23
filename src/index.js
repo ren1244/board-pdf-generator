@@ -28,7 +28,7 @@ document.querySelector('#start').addEventListener('click', () => {
         {
             id: 'jump',
             produce: (pdf) => {
-                jumpBoard(pdf, 297 - clip, 420 - clip, 18.2);
+                jumpBoard(pdf, 297 - clip, 420 - clip, 22.5);
             }
         }
     ];

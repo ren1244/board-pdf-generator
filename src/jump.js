@@ -72,19 +72,19 @@ function registryPart(pdf) {
     const mtx = [0.5, Math.sqrt(3) / 2, -0.5, Math.sqrt(3) / 2].map(t => t * scale);
     if (!xobj) {
         let s = [];
-        for (let i = 0; i <= 5; ++i) {
-            drawLine(s, i, 0, i, 5);
+        for (let i = 0; i < 5; ++i) {
+            drawLine(s, i, 0, i, 4);
             if (i > 0) {
-                drawLine(s, 0, i, 5, i);
+                drawLine(s, 0, i, 4, i);
                 drawLine(s, i, 0, 0, i);
-                if (i < 5) {
-                    drawLine(s, i, 5, 5, i);
+                if (i < 4) {
+                    drawLine(s, i, 4, 4, i);
                 }
             }
         }
 
-        for (let i = 1; i <= 5; ++i) {
-            for (let j = 0; j <= 5; ++j) {
+        for (let i = 1; i < 5; ++i) {
+            for (let j = 0; j < 5; ++j) {
                 drawCirc(s, j, i);
             }
         }
@@ -129,21 +129,21 @@ function registryBackground(pdf) {
         // 裁切路徑
         s.push(
             fmtstr('{} {} m {} {} l {} {} l W* n',
-                5 * mtx[0] + 5 * mtx[2], 5 * mtx[1] + 5 * mtx[3], // 頂點
-                5 * mtx[2], 5 * mtx[3], // 左下
-                5 * mtx[0], 5 * mtx[1] //右下
+                4 * mtx[0] + 4 * mtx[2], 4 * mtx[1] + 4 * mtx[3], // 頂點
+                4 * mtx[2], 4 * mtx[3], // 左下
+                4 * mtx[0], 4 * mtx[1] //右下
             )
         );
         // 矩形色塊
         s.push(
             fmtstr('{} {} {} {} re',
-                5 * mtx[2] - scale2, 5 * mtx[3] - scale2,
-                5 * mtx[0] - 5 * mtx[2] + scale2 * 2, 5 * mtx[1] + scale2 * 2
+                4 * mtx[2] - scale2, 4 * mtx[3] - scale2,
+                4 * mtx[0] - 4 * mtx[2] + scale2 * 2, 4 * mtx[1] + scale2 * 2
             )
         );
         // 圓形
-        for (let i = 0; i <= 5; ++i) {
-            for (let j = 5 - i; j <= 5; ++j) {
+        for (let i = 0; i < 5; ++i) {
+            for (let j = 4 - i; j < 5; ++j) {
                 let cx = i * mtx[0] + j * mtx[2];
                 let cy = i * mtx[1] + j * mtx[3];
                 s.push(getCirclePath(scale2, cx, cy));
