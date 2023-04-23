@@ -44,8 +44,9 @@ Pdf.prototype.write = function (stream) {
 }
 
 Pdf.prototype.getResource = function (classname, objname) {
-    if(this._resources[classname] && this._resources[classname][objname]) {
-        return this._resources[classname][objname];
+    const res = this._currentPage.entries.Resources;
+    if (res[classname] && res[classname][objname]) {
+        return res[classname][objname];
     }
     return null;
 }
