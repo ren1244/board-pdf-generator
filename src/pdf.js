@@ -68,7 +68,7 @@ Pdf.prototype.output = function (outputType) {
         ('0' + d.getUTCMinutes()).slice(-2) +
         ('0' + d.getUTCSeconds()).slice(-2) + "+00'00')";
     let result = PdfDict.finalize(this._catalog, new PdfDict({
-        Producer: '(https://github.com/ren1244/chess)',
+        Producer: '(https://github.com/ren1244/board-pdf-generator)',
         CreationDate: d,
         ModDate: d
     }));
