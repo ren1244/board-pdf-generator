@@ -6,7 +6,7 @@ export default [
     {
         input: 'src/index.js',
         output: {
-            file: 'dist/index.bundle.js',
+            file: 'docs/index.bundle.js',
             format: 'iife',
             plugins: [
                 terser()
